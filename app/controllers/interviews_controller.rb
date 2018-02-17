@@ -1,5 +1,5 @@
 class InterviewsController < ApplicationController
-  before_action :set_user, except: :destroy
+  before_action :set_user, except: [:destroy, :setup]
   before_action :set_interview, only: [:edit, :update, :destroy, :setup]
 
   def index
@@ -39,11 +39,11 @@ class InterviewsController < ApplicationController
   end
 
   def setup
-    others = Interview.where(user_id: @user.id).where.not(id: params[:id])
+    others = Interview.where(user_id: params[:user_id]).where.not(id: params[:id])
     if @interview.update(status: 1)
       others.update_all(status: 2)
       flash[:success] = "Interview has been set."
-      redirect_to root_url
+      redirect_to user_interviews_url(params[:user_id])
     else
       render 'edit'
     end
